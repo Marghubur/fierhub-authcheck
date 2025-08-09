@@ -11,9 +11,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @AutoConfiguration
 @ConditionalOnClass({FierhubService.class, AuthService.class})
-@ComponentScan(
-        basePackages = {"com.fierhub.*"}
-)
+@ComponentScan(basePackages = {"com.fierhub.*"})
 public class AutoConfigureServices {
     public AutoConfigureServices() {
     }

@@ -3,7 +3,7 @@ package com.fierhub.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fierhub.model.CurrentSession;
-import in.bottomhalf.common.models.TokenRequestBody;
+import com.fierhub.model.FierhubConfiguration;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 public class JwtService {
     @Autowired
-    TokenRequestBody tokenRequestBody;
+    FierhubConfiguration fierhubTokenModel;
     @Autowired
     CurrentSession currentSession;
     @Autowired
@@ -38,7 +38,7 @@ public class JwtService {
     }
 
     public Key getSignInKey() {
-        return Keys.hmacShaKeyFor(this.tokenRequestBody.getKey().getBytes());
+        return Keys.hmacShaKeyFor(this.fierhubTokenModel.getSecret().getKey().getBytes());
     }
 
     public String extractUsername(String token) {
@@ -88,7 +88,7 @@ public class JwtService {
     }
 
     public String generateToken(String username, Map<String, Object> extraClaims) {
-        return Jwts.builder().setClaims(extraClaims).setSubject(username).setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + (long)this.tokenRequestBody.getExpiryTimeInSeconds())).signWith(this.getSignInKey(), SignatureAlgorithm.HS256).compact();
+        return Jwts.builder().setClaims(extraClaims).setSubject(username).setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + (long)this.fierhubTokenModel.getSecret().getExpiryTimeInSeconds())).signWith(this.getSignInKey(), SignatureAlgorithm.HS256).compact();
     }
 }
 

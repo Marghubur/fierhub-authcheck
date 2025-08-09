@@ -2,6 +2,7 @@ package com.fierhub.service;
 
 import com.fierhub.configures.RouteValidator;
 import com.fierhub.model.CurrentSession;
+import com.fierhub.model.FierhubConfiguration;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,12 +24,13 @@ import java.util.Enumeration;
 public class AuthService extends OncePerRequestFilter {
     @Autowired
     JwtService jwtService;
-    @Value("${fierhub.enable.databaseConfiguration:false}")
-    boolean databaseConfiguration;
     @Autowired
     RouteValidator routeValidator;
     @Autowired
     FierhubService fierhubService;
+    @Autowired
+    FierhubConfiguration fierhubConfiguration;
+
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
     public AuthService() {
@@ -51,7 +53,7 @@ public class AuthService extends OncePerRequestFilter {
                     System.out.println("Authorities: " + authToken.getAuthorities());
                 }
 
-                if (this.databaseConfiguration) {
+                if (fierhubConfiguration.getEnable().isDatabaseConfiguration()) {
                     try {
                         this.fierhubService.configureConnection();
                     } catch (Exception var8) {
