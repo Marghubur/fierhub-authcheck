@@ -13,10 +13,11 @@ public class FierhubConfiguration {
     @JsonProperty("Code")
     String code;
     private TokenRequestBody secret;
-    private Enable enable;
+    private Repository repository;
+    private EnableDataSourceConfiguration enableDataSourceConfiguration;
     private Authorize authorize;
 
-    public static class Enable {
+    public static class EnableDataSourceConfiguration {
         private boolean databaseConfiguration;
 
         public boolean isDatabaseConfiguration() {
@@ -25,6 +26,27 @@ public class FierhubConfiguration {
 
         public void setDatabaseConfiguration(boolean databaseConfiguration) {
             this.databaseConfiguration = databaseConfiguration;
+        }
+    }
+
+    public static class Repository {
+        private String token;
+        private String url;
+
+        public String getToken() {
+            return token;
+        }
+
+        public void setToken(String token) {
+            this.token = token;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
         }
     }
 
@@ -40,6 +62,14 @@ public class FierhubConfiguration {
         }
     }
 
+    public Repository getRepository() {
+        return repository;
+    }
+
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+
     // Getters & setters for outer class
     public TokenRequestBody getSecret() {
         return secret;
@@ -49,12 +79,12 @@ public class FierhubConfiguration {
         this.secret = secret;
     }
 
-    public Enable getEnable() {
-        return enable;
+    public EnableDataSourceConfiguration getEnable() {
+        return enableDataSourceConfiguration;
     }
 
-    public void setEnable(Enable enable) {
-        this.enable = enable;
+    public void setEnable(EnableDataSourceConfiguration enableDataSourceConfiguration) {
+        this.enableDataSourceConfiguration = enableDataSourceConfiguration;
     }
 
     public Authorize getAuthorize() {

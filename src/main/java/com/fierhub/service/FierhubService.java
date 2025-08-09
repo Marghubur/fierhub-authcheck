@@ -1,6 +1,7 @@
 package com.fierhub.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fierhub.model.FierhubConfiguration;
 import in.bottomhalf.common.database.DataSourceProperties;
 import in.bottomhalf.common.database.DatabaseProperties;
 import in.bottomhalf.common.models.ApiResponse;
@@ -26,7 +27,7 @@ import java.util.Map;
 
 @Service
 public class FierhubService {
-//    @Value("${fierhub.repository.tokenRepositoryUrl:#{null}}")
+    //    @Value("${fierhub.repository.tokenRepositoryUrl:#{null}}")
 //    public String tokenRepositoryUrl;
 //    @Value("${fierhub.repository.token:#{null}}")
 //    public String accessToken;
@@ -36,40 +37,44 @@ public class FierhubService {
     DatabaseProperties dbConfig;
     @Autowired
     ObjectMapper mapper;
-//    @Autowired
-//    TokenRequestBody tokenRequestBody;
+    @Autowired
+    TokenRequestBody tokenRequestBody;
+    @Autowired
+    FierhubConfiguration fierhubConfiguration;
 
     public FierhubService() {
     }
 
-//    private void readTokenConfigurationFile() throws Exception {
-//        if (this.tokenRepositoryUrl != null && !this.tokenRepositoryUrl.isEmpty()) {
-//            String requestBody = "{\"accessToken\": \"" + this.accessToken + "\"}";
-//            String resultContent = this.postRequest(requestBody, this.tokenRepositoryUrl);
-//            FierhubTokeResponse fierhubTokeResponse = (FierhubTokeResponse)this.mapper.readValue(resultContent, FierhubTokeResponse.class);
-//            if (fierhubTokeResponse.statusCode != HttpStatus.OK.value()) {
-//                throw new Exception("Fail to get the Fierhub token repository detail. Please check your configuration.");
-//            } else {
-//                TokenRequestBody tokenRequestBody = (TokenRequestBody)this.mapper.readValue(fierhubTokeResponse.responseBody, TokenRequestBody.class);
-//                if (tokenRequestBody != null) {
-//                    this.tokenRequestBody.setClaims(tokenRequestBody.getClaims());
-//                    this.tokenRequestBody.setCompanyCode(tokenRequestBody.getCompanyCode());
-//                    this.tokenRequestBody.setKey(tokenRequestBody.getKey());
-//                    this.tokenRequestBody.setIssuer(tokenRequestBody.getIssuer());
-//                    this.tokenRequestBody.setExpiryTimeInSeconds(tokenRequestBody.getExpiryTimeInSeconds());
-//                    this.tokenRequestBody.setRefreshTokenExpiryTimeInSeconds(tokenRequestBody.getRefreshTokenExpiryTimeInSeconds());
-//                }
-//
-//            }
-//        } else {
-//            throw new Exception("Please add fierhub.repository.url in your application.yml(.properties) file");
-//        }
-//    }
-//
-//    @PostConstruct
-//    public void init() throws Exception {
-//        // this.readTokenConfigurationFile();
-//    }
+    private void readTokenConfigurationFile() throws Exception {
+        String requestBody = "{\"accessToken\": \"" + fierhubConfiguration.getRepository().getToken() + "\"}";
+        String resultContent = this.postRequest(requestBody, fierhubConfiguration.getRepository().getUrl());
+        FierhubTokeResponse fierhubTokeResponse = (FierhubTokeResponse) this.mapper.readValue(resultContent, FierhubTokeResponse.class);
+        if (fierhubTokeResponse.statusCode != HttpStatus.OK.value()) {
+            throw new Exception("Fail to get the Fierhub token repository detail. Please check your configuration.");
+        } else {
+            TokenRequestBody tokenRequestBody = (TokenRequestBody) this.mapper.readValue(fierhubTokeResponse.responseBody, TokenRequestBody.class);
+            if (tokenRequestBody != null) {
+                this.tokenRequestBody.setClaims(tokenRequestBody.getClaims());
+                this.tokenRequestBody.setCompanyCode(tokenRequestBody.getCompanyCode());
+                this.tokenRequestBody.setKey(tokenRequestBody.getKey());
+                this.tokenRequestBody.setIssuer(tokenRequestBody.getIssuer());
+                this.tokenRequestBody.setExpiryTimeInSeconds(tokenRequestBody.getExpiryTimeInSeconds());
+                this.tokenRequestBody.setRefreshTokenExpiryTimeInSeconds(tokenRequestBody.getRefreshTokenExpiryTimeInSeconds());
+            }
+        }
+    }
+
+    @PostConstruct
+    public void init() throws Exception {
+        if (fierhubConfiguration.getRepository() != null) {
+            if (fierhubConfiguration.getRepository().getUrl() == null || fierhubConfiguration.getRepository().getUrl().isEmpty()
+                    || fierhubConfiguration.getRepository().getToken() == null || fierhubConfiguration.getRepository().getToken().isEmpty()) {
+                throw new Exception("Unable to get fierhub.repository.token and fierhub.repository.token in you application properties file.");
+            }
+
+            this.readTokenConfigurationFile();
+        }
+    }
 
     public void configureConnection() throws Exception {
         String company = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getHeader("Code");
@@ -84,7 +89,7 @@ public class FierhubService {
     public ApiResponse generateToken(TokenRequestBody requestBody) throws Exception {
         // TokenRequestBody requestBody = this.tokenRequestBody.getTokenRequest(claims);
         String response = this.postRequest(this.mapper.writeValueAsString(requestBody), "https://www.bottomhalf.in/bt/s3/ExternalTokenManager/generateToken");
-        ApiResponse apiResponse = (ApiResponse)this.mapper.readValue(response, ApiResponse.class);
+        ApiResponse apiResponse = (ApiResponse) this.mapper.readValue(response, ApiResponse.class);
         return apiResponse;
     }
 
@@ -93,13 +98,13 @@ public class FierhubService {
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(filePath)).header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(requestBody)).build();
 
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader((InputStream)client.send(request, HttpResponse.BodyHandlers.ofInputStream()).body()));
+            BufferedReader reader = new BufferedReader(new InputStreamReader((InputStream) client.send(request, HttpResponse.BodyHandlers.ofInputStream()).body()));
 
             String var8;
             try {
                 StringBuilder content = new StringBuilder();
 
-                while(true) {
+                while (true) {
                     String line;
                     if ((line = reader.readLine()) == null) {
                         var8 = content.toString();

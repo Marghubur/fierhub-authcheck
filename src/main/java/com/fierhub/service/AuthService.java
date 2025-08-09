@@ -40,7 +40,7 @@ public class AuthService extends OncePerRequestFilter {
         if (HttpMethod.OPTIONS.matches(String.valueOf(request.getMethod()))) {
             filterChain.doFilter(request, response);
         } else if (this.routeValidator.isSecured.test(request)) {
-            //
+            isAnonymousRoute(request);
             filterChain.doFilter(request, response);
         } else {
             String authHeader = request.getHeader("Authorization");
@@ -67,6 +67,14 @@ public class AuthService extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
             }
         }
+    }
+
+    private void isAnonymousRoute(HttpServletRequest request) {
+        var url = request.getRequestURL().toString();
+        var anonymousRoutes =  fierhubConfiguration.getAuthorize().getUrls();
+        var isAnonymous =  anonymousRoutes.stream().anyMatch(x -> url.contains(x.replaceAll("/\\*\\*$", "")));
+        if (!isAnonymous)
+            throw new RuntimeException("You have not authorize to access");
     }
 
     private void showHeaders(HttpServletRequest httpRequest) {
