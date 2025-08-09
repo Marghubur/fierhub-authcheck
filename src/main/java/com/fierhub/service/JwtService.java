@@ -80,7 +80,12 @@ public class JwtService {
     }
 
     public Claims extractAllClaims(String token) {
-        return (Claims) Jwts.parserBuilder().setSigningKey(this.getSignInKey()).build().parseClaimsJws(token).getBody();
+        return (Claims) Jwts.parserBuilder()
+                .setSigningKey(this.getSignInKey())
+                .setAllowedClockSkewSeconds(5)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     public boolean isTokenExpired(String token) {
