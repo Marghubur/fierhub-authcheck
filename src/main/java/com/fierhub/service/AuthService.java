@@ -40,6 +40,7 @@ public class AuthService extends OncePerRequestFilter {
         if (HttpMethod.OPTIONS.matches(String.valueOf(request.getMethod()))) {
             filterChain.doFilter(request, response);
         } else if (this.routeValidator.isSecured.test(request)) {
+            //
             filterChain.doFilter(request, response);
         } else {
             String authHeader = request.getHeader("Authorization");
