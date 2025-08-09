@@ -9,7 +9,6 @@ import in.bottomhalf.common.models.FierhubTokeResponse;
 import in.bottomhalf.common.models.TokenRequestBody;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -22,15 +21,9 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Map;
 
 
-@Service
 public class FierhubService {
-    //    @Value("${fierhub.repository.tokenRepositoryUrl:#{null}}")
-//    public String tokenRepositoryUrl;
-//    @Value("${fierhub.repository.token:#{null}}")
-//    public String accessToken;
     @Autowired
     DataSourceProperties getCurrentDataSource;
     @Autowired

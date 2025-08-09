@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
 @AutoConfiguration
-@ConditionalOnClass({FierhubService.class, AuthService.class})
+@ConditionalOnClass({AuthService.class})
 @ComponentScan(basePackages = {"com.fierhub.*"})
 public class AutoConfigureServices {
     public AutoConfigureServices() {
@@ -20,6 +20,12 @@ public class AutoConfigureServices {
     @ConditionalOnMissingBean
     public AuthService authService() {
         return new AuthService();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public FierhubService fierhubService() {
+        return new FierhubService();
     }
 
     @Bean
