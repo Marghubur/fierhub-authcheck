@@ -13,7 +13,7 @@
 
     <groupId>com.fierhub</groupId>
     <artifactId>fier-authcheck</artifactId>
-    <version>1.0-3</version>
+    <version>1.0-4</version>
     <name>fier-authcheck</name>
     <description>filter to auto check authentication key</description>
     <url>https://github.com/bottomhalf/fier-authcheck</url>
